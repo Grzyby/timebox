@@ -543,8 +543,6 @@ def connect(target, debug):
 
 if __name__ == '__main__':
     import sys
-    args = ['settime', 'now']
-    #dev, disconnect = cli(sys.argv[1:], obj={})
-    dev, disconnect = cli(args, obj={})
+    dev, disconnect = cli(sys.argv[1:], obj={})    
     if (disconnect):
         dev.disconnect()
