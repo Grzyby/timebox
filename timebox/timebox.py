@@ -76,7 +76,7 @@ class Timebox:
         self.sock.send(str(bytearray(package)))
 
         if(recv):
-            ret = [ord(c) for c in self.sock.recv(256)]
+            ret = [ord(chr(c)) for c in self.sock.recv(256)]
 
             if(self.debug):
                 click.echo("<- %s" % [hex(h)[2:].zfill(2) for h in ret])
@@ -100,7 +100,7 @@ VIEWTYPES = {
 def discover(ctx, lookup_known=True, spinner=click_spinner.Spinner()):
     if (lookup_known and len(KNOWN_DEVICES)):
         if (ctx.obj['debug']):
-            click.echo('using knwon devices to find timebox')
+            click.echo('using known devices to find timebox')
         spinner.start()
         discovered = [(a, 'timebox') for a in KNOWN_DEVICES]
     else:
@@ -120,8 +120,8 @@ def discover(ctx, lookup_known=True, spinner=click_spinner.Spinner()):
 
                 try:
                     sock = bluetooth.BluetoothSocket(bluetooth.RFCOMM)
-                    sock.connect((a, 4))
-                    hello = [ord(c) for c in sock.recv(256)]
+                    sock.connect((a, 4))                    
+                    hello = [ord(chr(c)) for c in sock.recv(256)]
 
                     if(hello == TIMEBOX_HELLO):
                         ctx.obj['address'] = a
@@ -142,7 +142,7 @@ def discover(ctx, lookup_known=True, spinner=click_spinner.Spinner()):
                 ctx.abort()
         else:
             if (ctx.obj['address'].upper() not in KNOWN_DEVICES and
-                    click.confirm('would you like to add %s to known devices [y/n]?')):
+                    click.confirm('would you like to add %s to known devices [y/n]?' % ctx.obj['address'].upper())):
                 with open(CONFFILE, 'a') as f:
                     f.write(ctx.obj['address'].upper() + "\n")
 
@@ -543,6 +543,8 @@ def connect(target, debug):
 
 if __name__ == '__main__':
     import sys
-    dev, disconnect = cli(sys.argv[1:], obj={})
+    args = ['settime', 'now']
+    #dev, disconnect = cli(sys.argv[1:], obj={})
+    dev, disconnect = cli(args, obj={})
     if (disconnect):
         dev.disconnect()
