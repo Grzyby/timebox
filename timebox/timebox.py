@@ -129,6 +129,8 @@ def discover(ctx, lookup_known=True, spinner=click_spinner.Spinner()):
                         break
                     else:
                         click.echo('invalid hello received')
+                        if(ctx.obj.debug):
+                            print(hello)
 
                     sock.close()
                 except bluetooth.BluetoothError as be:
